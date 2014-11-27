@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package onlineshopagent;
+package pantauharga;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -30,7 +30,7 @@ public class Keyword {
     public ResultSet getAllQuery() {
         try {
             con = DriverManager.getConnection(url_con, user, password);
-            pst = con.prepareStatement("SELECT id,query FROM query");
+            pst = con.prepareStatement("SELECT id,query FROM query WHERE last_executed IS NULL");
             rs = pst.executeQuery();
 
         } catch (SQLException ex) {
@@ -38,6 +38,16 @@ public class Keyword {
         }
 
         return rs;
+    }
+
+    public void updateLastExecuted(int id) {
+        try {
+            con = DriverManager.getConnection(url_con, user, password);
+            pst = con.prepareStatement("UPDATE query SET last_executed=NOW() WHERE id=" + id);
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println("Terdapat Error Pertama = " + ex.getMessage());
+        }
     }
 
 }

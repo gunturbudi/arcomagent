@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package onlineshopagent;
+package pantauharga;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -40,7 +40,7 @@ public class Item {
     public void saveItem() {
         try {
             con = DriverManager.getConnection(url_con, user, password);
-            String q_insert= "INSERT IGNORE INTO `query_result`\n"
+            pst = con.prepareStatement("INSERT IGNORE INTO `query_result`\n"
                     + "            (`query_id`,\n"
                     + "             `site`,\n"
                     + "             `name`,\n"
@@ -62,9 +62,7 @@ public class Item {
                     + "        '"+description+"',\n"
                     + "        '"+img_url+"',\n"
                     + "        '"+url+"',\n"
-                    + "        NOW())";
-            //System.out.println(q_insert);
-            pst = con.prepareStatement(q_insert);
+                    + "        NOW())");
             
             pst.executeUpdate();
 

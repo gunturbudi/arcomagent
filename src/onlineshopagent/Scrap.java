@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package onlineshopagent;
+package pantauharga;
 
 import com.jaunt.*;
 import com.jaunt.component.*;
@@ -49,12 +49,11 @@ public class Scrap {
         try {
             Item items = new Item();
             items.site = "Bhinneka.com";
-            System.out.println("==Scraping Start at " + urlSearch + " ==");
 
             UserAgent userAgent = new UserAgent();
             userAgent.visit(urlBhinneka + urlSearch);
             Elements titles = userAgent.doc.findEvery("<span class=\"prod-itm-fullname\">");
-            Elements prices = userAgent.doc.findEvery("<div class=\"prod-itm-pricebox\">");
+            Elements prices = userAgent.doc.findEvery("<span class=\"prod-itm-price\">");
             Elements srcs = userAgent.doc.findEvery("<li class=\"prod-itm\">");
             String[] item_title = new String[100];
             double[][] item_price = new double[3][100];
@@ -63,7 +62,7 @@ public class Scrap {
 
             int i = 0;
             for (Element title : titles) {
-                item_title[i] = title.getText();
+                item_title[i] = title.getText().trim();
                 i++;
             }
             i = 0;
@@ -74,13 +73,12 @@ public class Scrap {
             }
             i = 0;
             for (Element price : prices) {
-                String price_normal = price.getElement(0).getElement(0).getElement(0).getElement(0).getText();
-                String price_discount;
-                String discount;
+                String price_normal = price.getText();
+                System.out.println(price_normal);
                 if ("Rp".equals(price_normal.trim())) {
                     price_normal = price.getElement(0).getElement(0).getElement(0).getElement(0).getElement(0).getText();
-                    price_discount = price.getElement(0).getElement(0).getElement(0).getElement(1).getText();
-                    discount = price.getElement(0).getElement(0).getElement(0).getElement(2).getElement(1).getText();
+                    String price_discount = price.getElement(0).getElement(0).getElement(0).getElement(1).getText();
+                    String discount = price.getElement(0).getElement(0).getElement(0).getElement(2).getElement(1).getText();
 
                     item_price[0][i] = Double.parseDouble(price_normal.replaceAll(",", "").replaceAll("Rp", "").trim());
                     item_price[1][i] = Double.parseDouble(price_discount.replaceAll(",", "").replaceAll("Rp", "").trim());
@@ -99,10 +97,11 @@ public class Scrap {
                 }
                 i++;
             }
+            
 
             int scraped = 0;
             for (int j = 0; j < item_title.length; j++) {
-                if ("".equals(item_title[j].trim())) {
+                if ("".equals(item_title[j])) {
                     continue;
                 }
 
@@ -120,9 +119,8 @@ public class Scrap {
             }
             System.out.println("Scraped in Bhinneka.com (" + urlSearch + ") = " + scraped);
 
-        } catch (JauntException e) {
-            //if title element isn't found or HTTP/connection error occurs, handle JauntException.
-            System.out.println("Terdapat Error utk URL = " + urlBhinneka + urlSearch);
+        } catch (JauntException e) {   //if title element isn't found or HTTP/connection error occurs, handle JauntException.
+            System.out.println("Terdapat Error Akses = " + urlBhinneka + urlSearch);
             System.err.println(e);
         }
     }
